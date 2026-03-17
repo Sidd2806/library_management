@@ -1,0 +1,58 @@
+
+
+library-management/
+│
+├── schema.sql                          # DB schema + seed data
+├── README.md                           # Full documentation
+│
+├── backend/
+│   ├── package.json
+│   ├── server.js                       # Express entry point
+│   ├── .env                            # DB & JWT config
+│   │
+│   ├── config/
+│   │   └── db.js                       # MySQL connection pool
+│   │
+│   ├── middleware/
+│   │   └── authMiddleware.js           # JWT verification guard
+│   │
+│   ├── models/                         # Raw SQL queries (no ORM)
+│   │   ├── userModel.js
+│   │   ├── bookModel.js
+│   │   └── issueModel.js
+│   │
+│   ├── controllers/                    # Business logic
+│   │   ├── authController.js           # register / login
+│   │   ├── bookController.js           # CRUD + search
+│   │   └── issueController.js          # issue / return / dashboard
+│   │
+│   └── routes/                         # Express routers
+│       ├── authRoutes.js
+│       ├── bookRoutes.js
+│       └── issueRoutes.js
+│
+└── frontend/
+    ├── package.json
+    ├── vite.config.js                  # Vite + /api proxy to :5000
+    ├── tailwind.config.js              # Custom theme (ink, gold, sage)
+    ├── postcss.config.js
+    ├── index.html                      # Google Fonts loaded here
+    │
+    └── src/
+        ├── main.jsx                    # ReactDOM root
+        ├── App.jsx                     # Router + PrivateRoute guard
+        ├── index.css                   # Tailwind directives + component classes
+        │
+        ├── services/
+        │   └── api.js                  # Axios instance, interceptors, all API calls
+        │
+        ├── components/
+        │   ├── Navbar.jsx              # Top nav with active links + logout
+        │   └── BookTable.jsx           # Books table with Issue/Return/Edit/Delete
+        │
+        └── pages/
+            ├── Login.jsx               # Login + Register tabs
+            ├── Dashboard.jsx           # Stats cards + recent issues
+            ├── Books.jsx               # List + live search + actions
+            ├── AddBook.jsx             # Add book form
+            └── UpdateBook.jsx          # Pre-filled edit form
