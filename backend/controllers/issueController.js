@@ -114,7 +114,7 @@ export const getDashboardStats = async (req, res) => {
     const [availableResult] = await pool.execute('SELECT SUM(available) AS total FROM books')
     const [issuedResult]    = await pool.execute('SELECT COUNT(*) AS total FROM issued_books WHERE return_date IS NULL')
     const [recentIssues]    = await pool.execute(`
-      SELECT ib.id, b.title, u.username, ib.issue_date
+      SELECT ib.id, b.title AS book_title, u.email, ib.issue_date
       FROM issued_books ib
       JOIN books b ON ib.book_id = b.id
       JOIN users u ON ib.user_id = u.id

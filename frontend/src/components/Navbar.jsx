@@ -1,39 +1,66 @@
-// src/components/Navbar.jsx
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 export default function Navbar() {
+  const location = useLocation()
   const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
 
   const handleLogout = () => {
     localStorage.clear()
     navigate('/login')
   }
 
+  const links = [
+    { to: '/', label: 'Dashboard' },
+    { to: '/books', label: 'Catalog' },
+    { to: '/books/add', label: 'Add Book' },
+  ]
+
   return (
-    <nav className="bg-gray-800 text-white px-6 py-4 flex items-center justify-between">
+    <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 text-slate-900 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div className="flex items-center justify-between gap-4">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-sm font-bold text-amber-900">
+              LM
+            </div>
+            <div>
+              <p className="text-lg font-semibold tracking-wide">LibraryMS</p>
+              <p className="text-xs text-slate-500">Library admin panel</p>
+            </div>
+          </Link>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:gap-5">
+          <nav className="flex flex-wrap gap-2">
+            {links.map((link) => {
+              const isActive =
+                link.to === '/'
+                  ? location.pathname === '/'
+                  : location.pathname.startsWith(link.to)
 
-      {/* Logo */}
-      <span className="text-xl font-bold">📚 LibraryMS</span>
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                    isActive
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-600 hover:bg-stone-100 hover:text-slate-900'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
+          </nav>
 
-      {/* Links */}
-      <div className="flex gap-6">
-        <Link to="/" className="hover:text-yellow-400">Dashboard</Link>
-        <Link to="/books" className="hover:text-yellow-400">Books</Link>
-        <Link to="/books/add" className="hover:text-yellow-400">Add Book</Link>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center justify-center rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Logout
+          </button>
+        </div>
       </div>
-
-      {/* User + Logout */}
-      <div className="flex items-center gap-4">
-        <span className="text-gray-300 text-sm">👤 {user.username}</span>
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
-        >
-          Logout
-        </button>
-      </div>
-
-    </nav>
+    </header>
   )
 }

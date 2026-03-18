@@ -1,4 +1,3 @@
-// src/services/api.js
 import axios from 'axios'
 
 // Create Axios instance
@@ -26,20 +25,19 @@ AxiosInstance.interceptors.response.use(
   }
 )
 
-// ── Auth ───────────────────────────────────────────────────
 export const loginUser = async (username, password) => {
   const { data } = await AxiosInstance.post('/api/auth/login', { username, password })
   return data
 }
 
-export const registerUser = async (username, password) => {
-  const { data } = await AxiosInstance.post('/api/auth/register', { username, password })
+
+export const getAllBooks = async () => {
+  const { data } = await AxiosInstance.get('/api/books')
   return data
 }
 
-// ── Books ──────────────────────────────────────────────────
-export const getAllBooks = async () => {
-  const { data } = await AxiosInstance.get('/api/books')
+export const getBookById = async (id) => {
+  const { data } = await AxiosInstance.get(`/api/books/${id}`)
   return data
 }
 
@@ -63,7 +61,7 @@ export const deleteBook = async (id) => {
   return data
 }
 
-// ── Issue / Return ─────────────────────────────────────────
+
 export const issueBook = async (book_id) => {
   const { data } = await AxiosInstance.post('/api/issue', { book_id })
   return data
@@ -74,7 +72,7 @@ export const returnBook = async (book_id) => {
   return data
 }
 
-// ── Dashboard ──────────────────────────────────────────────
+
 export const getDashboard = async () => {
   const { data } = await AxiosInstance.get('/api/dashboard')
   return data

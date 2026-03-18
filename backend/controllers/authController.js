@@ -1,7 +1,7 @@
 // controllers/authController.js
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { findUserByUsername, createUser } from '../models/userModel.js'
+import { createUser, findUserByUsername } from '../models/userModel.js'
 
 const SALT_ROUNDS = 10
 
@@ -10,14 +10,14 @@ export const register = async (req, res) => {
     const { username, password } = req.body
 
     if (!username || !password)
-      return res.status(400).json({ message: 'Username and password are required.' })
+      return res.status(400).json({ message: 'username and password are required.' })
 
     if (password.length < 6)
       return res.status(400).json({ message: 'Password must be at least 6 characters.' })
 
     const existingUser = await findUserByUsername(username)
     if (existingUser)
-      return res.status(409).json({ message: 'Username already exists.' })
+      return res.status(409).json({ message: 'username already exists.' })
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
     await createUser(username, hashedPassword)
@@ -34,7 +34,7 @@ export const login = async (req, res) => {
     const { username, password } = req.body
 
     if (!username || !password)
-      return res.status(400).json({ message: 'Username and password are required.' })
+      return res.status(400).json({ message: 'username and password are required.' })
 
     const user = await findUserByUsername(username)
     if (!user)

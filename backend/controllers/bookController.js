@@ -11,6 +11,22 @@ export const fetchAllBooks = async (req, res) => {
   }
 }
 
+export const fetchBookById = async (req, res) => {
+  try {
+    const { id } = req.params
+    const book = await getBookById(id)
+
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found.' })
+    }
+
+    return res.status(200).json(book)
+  } catch (err) {
+    console.error('fetchBookById error:', err.message)
+    return res.status(500).json({ message: 'Failed to fetch book.' })
+  }
+}
+
 export const search = async (req, res) => {
   try {
     const { q } = req.query

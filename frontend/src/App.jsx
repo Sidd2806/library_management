@@ -1,64 +1,67 @@
-// src/App.jsx
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Navbar      from './components/Navbar.jsx'
-import Login       from './pages/Login.jsx'
-import Dashboard   from './pages/Dashboard.jsx'
-import Books       from './pages/Books.jsx'
-import AddBook     from './pages/AddBook.jsx'
-import UpdateBook  from './pages/UpdateBook.jsx'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import Navbar from './components/Navbar.jsx'
+import AddBook from './pages/AddBook.jsx'
+import Books from './pages/Books.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import Login from './pages/Login.jsx'
+import UpdateBook from './pages/UpdateBook.jsx'
 
-// Redirects to /login if no token found
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token')
-  return token ? children : <Navigate to="/login" />
+  return token ? children : <Navigate to="/login" replace />
+}
+
+function ProtectedLayout({ children }) {
+  return (
+    <PrivateRoute>
+      <div className="min-h-screen bg-stone-200 text-slate-900">
+        <Navbar />
+        <main className="mx-auto flex w-full max-w-7xl flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-8">
+          <div className="w-full animate-[fade-in_0.45s_ease]">{children}</div>
+        </main>
+      </div>
+    </PrivateRoute>
+  )
 }
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Public */}
         <Route path="/login" element={<Login />} />
-
-        {/* Protected - all share the Navbar */}
-        <Route path="/" element={
-          <PrivateRoute>
-            <Navbar />
-            <div className="max-w-6xl mx-auto p-6">
+        <Route
+          path="/"
+          element={
+            <ProtectedLayout>
               <Dashboard />
-            </div>
-          </PrivateRoute>
-        } />
-
-        <Route path="/books" element={
-          <PrivateRoute>
-            <Navbar />
-            <div className="max-w-6xl mx-auto p-6">
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/books"
+          element={
+            <ProtectedLayout>
               <Books />
-            </div>
-          </PrivateRoute>
-        } />
-
-        <Route path="/books/add" element={
-          <PrivateRoute>
-            <Navbar />
-            <div className="max-w-6xl mx-auto p-6">
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/books/add"
+          element={
+            <ProtectedLayout>
               <AddBook />
-            </div>
-          </PrivateRoute>
-        } />
-
-        <Route path="/books/edit/:id" element={
-          <PrivateRoute>
-            <Navbar />
-            <div className="max-w-6xl mx-auto p-6">
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/books/edit/:id"
+          element={
+            <ProtectedLayout>
               <UpdateBook />
-            </div>
-          </PrivateRoute>
-        } />
-
-        <Route path="*" element={<Navigate to="/" />} />
+            </ProtectedLayout>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   )

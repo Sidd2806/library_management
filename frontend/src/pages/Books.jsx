@@ -1,35 +1,31 @@
-// src/pages/Books.jsx
-import { useState, useEffect } from 'react'
-import { getAllBooks, searchBooks, deleteBook, issueBook, returnBook } from '../services/api'
+import { useEffect, useState } from 'react'
 import BookTable from '../components/BookTable'
+import { deleteBook, getAllBooks, issueBook, returnBook, searchBooks } from '../services/api'
 
 export default function Books() {
-  const [books, setBooks]     = useState([])
-  const [query, setQuery]     = useState('')
+  const [books, setBooks] = useState([])
+  const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
-  const [error, setError]     = useState('')
+  const [error, setError] = useState('')
 
-  // Show success message for 3 seconds
   const showSuccess = (msg) => {
     setMessage(msg)
     setError('')
     setTimeout(() => setMessage(''), 3000)
   }
 
-  // Show error message for 3 seconds
   const showError = (msg) => {
     setError(msg)
     setMessage('')
     setTimeout(() => setError(''), 3000)
   }
 
-  // Load all books
   const loadBooks = async () => {
     setLoading(true)
     try {
-      const books = await getAllBooks()
-      setBooks(books)
+      const allBooks = await getAllBooks()
+      setBooks(allBooks)
     } catch {
       showError('Failed to load books.')
     } finally {
@@ -37,29 +33,28 @@ export default function Books() {
     }
   }
 
-  // Load books on first render
   useEffect(() => {
     loadBooks()
-  }, [])
+  },[])
 
-  // Search with 400ms debounce
   useEffect(() => {
     if (query.trim() === '') {
       loadBooks()
       return
     }
+
     const timeout = setTimeout(async () => {
       try {
-        const books = await searchBooks(query)
-        setBooks(books)
+        const filteredBooks = await searchBooks(query)
+        setBooks(filteredBooks)
       } catch {
         showError('Search failed.')
       }
     }, 400)
+
     return () => clearTimeout(timeout)
   }, [query])
 
-  // Delete a book
   const handleDelete = async (id, title) => {
     if (!confirm(`Delete "${title}"?`)) return
     try {
@@ -71,7 +66,6 @@ export default function Books() {
     }
   }
 
-  // Issue a book
   const handleIssue = async (id) => {
     try {
       const data = await issueBook(id)
@@ -82,7 +76,6 @@ export default function Books() {
     }
   }
 
-  // Return a book
   const handleReturn = async (id) => {
     try {
       const data = await returnBook(id)
@@ -94,43 +87,45 @@ export default function Books() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Books</h1>
+    <div className="space-y-6">
+      <section className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="mb-3 inline-flex w-fit items-center rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Catalog</div>
+          <h1 className="font-['Playfair_Display'] text-4xl leading-tight text-slate-900 sm:text-[3.25rem]">Book Collection</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+            Search the catalog, update book records, and manage issue and return actions from one workspace.
+          </p>
+        </div>
+        <div className="inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">{books.length} result(s)</div>
+      </section>
 
-      {/* Success message */}
-      {message && (
-        <p className="bg-green-100 text-green-700 border border-green-300 rounded px-4 py-2 mb-4">
-          {message}
-        </p>
+      {message && <p className="rounded-[18px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-[0.92rem] text-emerald-800">{message}</p>}
+      {error && <p className="rounded-[18px] border border-rose-200 bg-rose-50 px-4 py-3 text-[0.92rem] text-rose-700">{error}</p>}
+
+      <section className="rounded-2xl border border-stone-200 bg-white p-5 sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="w-full max-w-xl">
+            <label className="mb-2 block text-sm font-medium text-slate-900">Search books</label>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by title or author..."
+              className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-[0.95rem] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400"
+            />
+          </div>
+
+          <div className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-slate-500">
+            Use the action buttons in each row to issue, return, edit, or remove books.
+          </div>
+        </div>
+      </section>
+
+      {loading ? (
+        <div className="rounded-2xl border border-stone-200 bg-white px-6 py-12 text-center text-slate-500">Loading catalog...</div>
+      ) : (
+        <BookTable books={books} onDelete={handleDelete} onIssue={handleIssue} onReturn={handleReturn} />
       )}
-
-      {/* Error message */}
-      {error && (
-        <p className="bg-red-100 text-red-700 border border-red-300 rounded px-4 py-2 mb-4">
-          {error}
-        </p>
-      )}
-
-      {/* Search bar */}
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by title or author..."
-        className="w-full max-w-md border rounded px-3 py-2 text-sm mb-6 focus:outline-none focus:ring-2 focus:ring-gray-400"
-      />
-
-      {/* Table */}
-      {loading
-        ? <p className="text-gray-500">Loading...</p>
-        : <BookTable
-            books={books}
-            onDelete={handleDelete}
-            onIssue={handleIssue}
-            onReturn={handleReturn}
-          />
-      }
-
     </div>
   )
 }

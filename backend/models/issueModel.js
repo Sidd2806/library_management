@@ -34,7 +34,7 @@ export const countIssuedBooks = async () => {
 
 export const getAllIssues = async () => {
   const [rows] = await pool.execute(`
-    SELECT ib.id, b.title AS book_title, b.author, u.username, ib.issue_date, ib.return_date
+    SELECT ib.id, b.title AS book_title, b.author, u.email, ib.issue_date, ib.return_date
     FROM issued_books ib
     JOIN books b ON ib.book_id = b.id
     JOIN users u ON ib.user_id = u.id
